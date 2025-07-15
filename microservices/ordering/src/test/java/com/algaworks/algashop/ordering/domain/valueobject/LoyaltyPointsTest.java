@@ -27,4 +27,12 @@ class LoyaltyPointsTest {
                 .hasMessage(ErrorMessages.VALIDATION_ERROR_LOYALTY_POINTS_CANNOT_BE_NEGATIVE);
     }
 
+    @Test
+    void shouldNotAddZeroValue(){
+        LoyaltyPoints loyaltyPoints = new LoyaltyPoints(10);
+        Assertions.assertThatThrownBy(() -> loyaltyPoints.add(0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ErrorMessages.VALIDATION_ERROR_LOYALTY_POINTS_CANNOT_BE_NEGATIVE);
+    }
+
 }

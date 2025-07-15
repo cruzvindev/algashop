@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public record LoyaltyPoints(Integer points) implements Comparable<LoyaltyPoints> {
 
+    public static LoyaltyPoints ZERO = new LoyaltyPoints(0);
+
     public LoyaltyPoints() {
         this(0);
     }
@@ -24,7 +26,7 @@ public record LoyaltyPoints(Integer points) implements Comparable<LoyaltyPoints>
 
     public LoyaltyPoints add(LoyaltyPoints loyaltyPoints){
         Objects.requireNonNull(loyaltyPoints);
-        if(loyaltyPoints.points < 0) {
+        if(loyaltyPoints.points <= 0) {
             throw new IllegalArgumentException(ErrorMessages.VALIDATION_ERROR_LOYALTY_POINTS_CANNOT_BE_NEGATIVE);
         }
         return new LoyaltyPoints(this.points + loyaltyPoints.points);
