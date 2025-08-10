@@ -9,4 +9,5 @@ public class ErrorMessages {
     public static final String ERROR_CUSTOMER_ARCHIVED = "Customer is archived and cannot be changed";
     public static final String VALIDATION_ERROR_LOYALTY_POINTS_CANNOT_BE_NEGATIVE = "Loyalty points cannot be negative";
     public static final String VALIDATION_ERROR_LOYALTY_POINTS_CANNOT_BE_ZERO = "Loyalty points cannot be zero";
+    public static final String ERROR_ORDER_STATUS_CANNOT_BE_CHANGED = "Cannot change order %s status from %s to %s";
 }
