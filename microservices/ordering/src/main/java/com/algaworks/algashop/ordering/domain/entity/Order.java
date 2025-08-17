@@ -4,6 +4,8 @@ import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
+import com.algaworks.algashop.ordering.exception.OrderCannotBePlacedException;
+import com.algaworks.algashop.ordering.exception.OrderInvalidShippingDeliveryDateException;
 import com.algaworks.algashop.ordering.exception.OrderStatusCannotBeChangedException;
 import lombok.Builder;
 
@@ -102,7 +104,53 @@ public class Order {
     }
 
     public void place(){
+        Objects.requireNonNull(this.shipping());
+        Objects.requireNonNull(this.billing());
+        Objects.requireNonNull(this.shippingCost());
+        Objects.requireNonNull(this.expectedDeliveryDate());
+        Objects.requireNonNull(this.items());
+        Objects.requireNonNull(this.paymentMethod());
+
+        if(this.items.isEmpty()){
+            throw new OrderCannotBePlacedException(this.id());
+        }
+
         this.changeStatus(OrderStatus.PLACED);
+        this.setPlacedAt(OffsetDateTime.now());
+    }
+
+    public void markAsPaid() {
+        this.setPaidAt(OffsetDateTime.now());
+        this.changeStatus(OrderStatus.PAID);
+    }
+
+    public void changePaymentMethod(PaymentMethod paymentMethod) {
+        Objects.requireNonNull(paymentMethod);
+        this.setPaymentMethod(paymentMethod);
+    }
+
+    public void changePaymentStatus(PaymentMethod paymentMethod){
+        Objects.requireNonNull(paymentMethod);
+        this.changeStatus(OrderStatus.PLACED);
+    }
+
+    public void changeBilling(BillingInfo billing){
+        Objects.requireNonNull(billing);
+        this.setBilling(billing);
+    }
+
+    public void changeShipping(ShippingInfo shipping, Money shippingCost, LocalDate expectedDeliveryDate){
+        Objects.requireNonNull(shipping);
+        Objects.requireNonNull(shippingCost);
+        Objects.requireNonNull(expectedDeliveryDate);
+
+        if(expectedDeliveryDate.isBefore(LocalDate.now())){
+            throw new OrderInvalidShippingDeliveryDateException(this.id());
+        }
+
+        this.setShipping(shipping);
+        this.setShippingCost(shippingCost);
+        this.setExpectedDeliveryDate(expectedDeliveryDate);
     }
 
     private void changeStatus(OrderStatus newStatus){
@@ -119,6 +167,10 @@ public class Order {
 
     public boolean isPlaced(){
         return OrderStatus.PLACED.equals(this.status);
+    }
+
+    public boolean isPaid() {
+        return OrderStatus.PAID.equals(this.status());
     }
 
     public OrderId id() {
