@@ -36,6 +36,43 @@ public class OrderPersistenceEntityDisassembler {
                 .build();
     }
 
+    private Shipping toShippingValueObject(ShippingEmbeddable shippingEmbeddable) {
+        RecipientEmbeddable recipientEmbeddable = shippingEmbeddable.getRecipient();
+        return Shipping.builder()
+                .cost(new Money(shippingEmbeddable.getCost()))
+                .expectedDate(shippingEmbeddable.getExpectedDate())
+                .recipient(
+                        Recipient.builder()
+                                .fullName(new FullName(recipientEmbeddable.getFirstName(), recipientEmbeddable.getLastName()))
+                                .document(new Document(recipientEmbeddable.getDocument()))
+                                .phone(new Phone(recipientEmbeddable.getPhone()))
+                                .build()
+                )
+                .address(toAddressValueObject(shippingEmbeddable.getAddress()))
+                .build();
+    }
+
+    private Billing toBillingValueObject(BillingEmbeddable billingEmbeddable) {
+        return Billing.builder()
+                .fullName(new FullName(billingEmbeddable.getFirstName(), billingEmbeddable.getLastName()))
+                .document(new Document(billingEmbeddable.getDocument()))
+                .phone(new Phone(billingEmbeddable.getPhone()))
+                .address(toAddressValueObject(billingEmbeddable.getAddress()))
+                .build();
+    }
+
+    private Address toAddressValueObject(AddressEmbeddable address) {
+        return Address.builder()
+                .street(address.getStreet())
+                .number(address.getNumber())
+                .complement(address.getComplement())
+                .neighborhood(address.getNeighborhood())
+                .city(address.getCity())
+                .state(address.getState())
+                .zipCode(new ZipCode(address.getZipCode()))
+                .build();
+    }
+
     public Order toDomain(OrderPersistenceEntity orderPersistence) {
         return Order.existing()
                 .id(new OrderId(orderPersistence.getId()))

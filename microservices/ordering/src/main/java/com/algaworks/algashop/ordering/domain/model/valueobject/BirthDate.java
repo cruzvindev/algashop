@@ -3,24 +3,24 @@ package com.algaworks.algashop.ordering.domain.model.valueobject;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public record BirthDate(LocalDate birthDate) {
+public record BirthDate(LocalDate value) {
 
-    public BirthDate(LocalDate birthDate) {
-        Objects.requireNonNull(birthDate);
+    public BirthDate(LocalDate value) {
+        Objects.requireNonNull(value);
 
-        if(birthDate.isAfter(LocalDate.now())) {
+        if(value.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Birth date cannot be in the future.");
         }
-        this.birthDate = birthDate;
+        this.value = value;
     }
 
     public Integer age() {
-        return LocalDate.now().getYear() - birthDate.getYear() -
-               (LocalDate.now().getDayOfYear() < birthDate.getDayOfYear() ? 1 : 0);
+        return LocalDate.now().getYear() - value.getYear() -
+               (LocalDate.now().getDayOfYear() < value.getDayOfYear() ? 1 : 0);
     }
 
     @Override
     public String toString() {
-        return birthDate.toString();
+        return value.toString();
     }
 }
