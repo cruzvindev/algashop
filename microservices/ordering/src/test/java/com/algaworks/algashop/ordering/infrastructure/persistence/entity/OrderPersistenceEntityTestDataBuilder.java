@@ -9,21 +9,25 @@ import java.util.Set;
 
 public class OrderPersistenceEntityTestDataBuilder {
 
-    private OrderPersistenceEntityTestDataBuilder(){}
+    private OrderPersistenceEntityTestDataBuilder() {
+    }
 
-    public static OrderPersistenceEntityBuilder existingOrder(){
+    public static OrderPersistenceEntityBuilder existingOrder() {
         return OrderPersistenceEntity.builder()
                 .id(IdGenerator.generateTSID().toLong())
-                .customerId(IdGenerator.generateTimeBasedUUID())
+                .customer(CustomerPersistenceEntityTestDataBuilder.aCustomer().build())
                 .totalItems(3)
                 .totalAmount(new BigDecimal(1250))
                 .status("DRAFT")
                 .paymentMethod("CREDIT_CARD")
                 .placedAt(OffsetDateTime.now())
-                .items(Set.of(existingItem().build(), existingItemAlt().build()));
+                .items(Set.of(
+                        existingItem().build(),
+                        existingItemAlt().build()
+                ));
     }
 
-    public static OrderItemPersistenceEntity.OrderItemPersistenceEntityBuilder existingItem(){
+    public static OrderItemPersistenceEntity.OrderItemPersistenceEntityBuilder existingItem() {
         return OrderItemPersistenceEntity.builder()
                 .id(IdGenerator.generateTSID().toLong())
                 .price(new BigDecimal(500))
@@ -33,7 +37,7 @@ public class OrderPersistenceEntityTestDataBuilder {
                 .productId(IdGenerator.generateTimeBasedUUID());
     }
 
-    public static OrderItemPersistenceEntity.OrderItemPersistenceEntityBuilder existingItemAlt(){
+    public static OrderItemPersistenceEntity.OrderItemPersistenceEntityBuilder existingItemAlt() {
         return OrderItemPersistenceEntity.builder()
                 .id(IdGenerator.generateTSID().toLong())
                 .price(new BigDecimal(250))
@@ -42,5 +46,4 @@ public class OrderPersistenceEntityTestDataBuilder {
                 .productName("Mouse pad")
                 .productId(IdGenerator.generateTimeBasedUUID());
     }
-
 }

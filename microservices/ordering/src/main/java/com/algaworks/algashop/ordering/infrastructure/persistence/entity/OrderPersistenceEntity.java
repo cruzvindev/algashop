@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,32 +25,13 @@ import java.util.UUID;
 @Table(name = "\"order\"")
 @EntityListeners(AuditingEntityListener.class)
 public class OrderPersistenceEntity {
-
-    @Builder
-    public OrderPersistenceEntity(Long id, UUID customerId, BigDecimal totalAmount, Integer totalItems, String status, String paymentMethod, OffsetDateTime placedAt, OffsetDateTime paidAt, OffsetDateTime canceledAt, OffsetDateTime readyAt, UUID createdByUserId, OffsetDateTime lastModifiedAt, UUID lastModifiedByUserId, Long version, BillingEmbeddable billing, ShippingEmbeddable shipping, Set<OrderItemPersistenceEntity> items) {
-        this.id = id;
-        this.customerId = customerId;
-        this.totalAmount = totalAmount;
-        this.totalItems = totalItems;
-        this.status = status;
-        this.paymentMethod = paymentMethod;
-        this.placedAt = placedAt;
-        this.paidAt = paidAt;
-        this.canceledAt = canceledAt;
-        this.readyAt = readyAt;
-        this.createdByUserId = createdByUserId;
-        this.lastModifiedAt = lastModifiedAt;
-        this.lastModifiedByUserId = lastModifiedByUserId;
-        this.version = version;
-        this.billing = billing;
-        this.shipping = shipping;
-        this.replaceItems(items);
-    }
-
     @Id
     @EqualsAndHashCode.Include
     private Long id;
-    private UUID customerId;
+
+    @JoinColumn
+    @ManyToOne(optional = false)
+    private CustomerPersistenceEntity customer;
 
     private BigDecimal totalAmount;
     private Integer totalItems;
@@ -72,6 +54,27 @@ public class OrderPersistenceEntity {
 
     @Version
     private Long version;
+
+    @Builder
+    public OrderPersistenceEntity(Long id, CustomerPersistenceEntity customer, BigDecimal totalAmount, Integer totalItems, String status, String paymentMethod, OffsetDateTime placedAt, OffsetDateTime paidAt, OffsetDateTime canceledAt, OffsetDateTime readyAt, UUID createdByUserId, OffsetDateTime lastModifiedAt, UUID lastModifiedByUserId, Long version, BillingEmbeddable billing, ShippingEmbeddable shipping, Set<OrderItemPersistenceEntity> items) {
+        this.id = id;
+        this.customer = customer;
+        this.totalAmount = totalAmount;
+        this.totalItems = totalItems;
+        this.status = status;
+        this.paymentMethod = paymentMethod;
+        this.placedAt = placedAt;
+        this.paidAt = paidAt;
+        this.canceledAt = canceledAt;
+        this.readyAt = readyAt;
+        this.createdByUserId = createdByUserId;
+        this.lastModifiedAt = lastModifiedAt;
+        this.lastModifiedByUserId = lastModifiedByUserId;
+        this.version = version;
+        this.billing = billing;
+        this.shipping = shipping;
+        this.replaceItems(items);
+    }
 
     @Embedded
     @AttributeOverrides({
@@ -130,5 +133,12 @@ public class OrderPersistenceEntity {
 
         item.setOrder(this);
         this.getItems().add(item);
+    }
+
+    public UUID getCustomerId() {
+        if(Objects.isNull(this.customer)) {
+            return null;
+        }
+        return this.customer.getId();
     }
 }

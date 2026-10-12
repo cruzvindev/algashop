@@ -9,9 +9,9 @@ import java.time.OffsetDateTime;
 
 public class CustomerTestDataBuilder {
 
-    private CustomerTestDataBuilder() {
+    public static final CustomerId DEFAULT_CUSTOMER_ID = new CustomerId();
 
-    }
+    private CustomerTestDataBuilder() {}
 
     public static Customer.BrandNewCustomerBuild brandNewCustomer() {
         return Customer.brandNew()
@@ -58,7 +58,7 @@ public class CustomerTestDataBuilder {
 
     public static Customer.ExistingCustomerBuild existingCustomer(){
         return Customer.existing()
-                .id(new CustomerId())
+                .id(DEFAULT_CUSTOMER_ID)
                 .registeredAt(OffsetDateTime.now())
                 .archived(false)
                 .archivedAt(null)

@@ -8,19 +8,24 @@ import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
 
 import java.time.LocalDate;
 
+import static com.algaworks.algashop.ordering.domain.model.entity.builders.CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID;
+
 public class OrderTestDataBuilder {
 
-    private CustomerId customerId = new CustomerId();
+    private CustomerId customerId = DEFAULT_CUSTOMER_ID;
+
     private PaymentMethod paymentMethod = PaymentMethod.GATEWAY_BALANCE;
-    private Money shippingCost = new Money("10.00");
-    private LocalDate expectedDeliveryDate = LocalDate.now().plusWeeks(1);
+
     private Shipping shipping = aShipping();
     private Billing billing = aBilling();
 
     private boolean withItems = true;
+
     private OrderStatus status = OrderStatus.DRAFT;
 
-    private OrderTestDataBuilder() {}
+    private OrderTestDataBuilder() {
+
+    }
 
     public static OrderTestDataBuilder anOrder() {
         return new OrderTestDataBuilder();
@@ -53,8 +58,12 @@ public class OrderTestDataBuilder {
                 order.markAsPaid();
             }
             case READY -> {
+                order.place();
+                order.markAsPaid();
+                order.markAsReady();
             }
             case CANCELED -> {
+                order.cancel();
             }
         }
 
@@ -66,15 +75,16 @@ public class OrderTestDataBuilder {
                 .address(anAddress())
                 .document(new Document("225-09-1992"))
                 .phone(new Phone("123-111-9911"))
-                .email(new Email("john.doe@gmail.com"))
-                .fullName(new FullName("John", "Doe")).build();
+                .fullName(new FullName("John", "Doe"))
+                .email(new Email("jhon.doe@gmail.com"))
+                .build();
     }
 
     public static Shipping aShipping() {
         return Shipping.builder()
-                .address(anAddress())
-                .cost(new Money("10.00"))
+                .cost(new Money("10"))
                 .expectedDate(LocalDate.now().plusWeeks(1))
+                .address(anAddress())
                 .recipient(Recipient.builder()
                         .fullName(new FullName("John", "Doe"))
                         .document(new Document("112-33-2321"))
@@ -94,27 +104,27 @@ public class OrderTestDataBuilder {
                 .zipCode(new ZipCode("79911")).build();
     }
 
-    public static Address anAddressAlt() {
-        return Address.builder()
-                .street("Main Street")
-                .number("5678")
-                .neighborhood("Downtown")
-                .complement("suite 22")
-                .city("Springfield")
-                .state("Illinois")
-                .zipCode(new ZipCode("62701")).build();
-    }
-
     public static Shipping aShippingAlt() {
         return Shipping.builder()
-                .address(anAddressAlt())
-                .cost(new Money("15.00"))
+                .cost(new Money("20.00"))
                 .expectedDate(LocalDate.now().plusWeeks(2))
+                .address(anAddressAlt())
                 .recipient(Recipient.builder()
-                        .fullName(new FullName("Jane", "Smith"))
-                        .document(new Document("987-65-4321"))
-                        .phone(new Phone("555-123-4567"))
+                        .fullName(new FullName("Mary", "Jones"))
+                        .document(new Document("552-11-4333"))
+                        .phone(new Phone("54-454-1144"))
                         .build())
+                .build();
+    }
+
+    public static Address anAddressAlt() {
+        return Address.builder()
+                .street("Sansome Street")
+                .number("875")
+                .neighborhood("Sansome")
+                .city("San Francisco")
+                .state("California")
+                .zipCode(new ZipCode("08040"))
                 .build();
     }
 
@@ -128,12 +138,12 @@ public class OrderTestDataBuilder {
         return this;
     }
 
-    public OrderTestDataBuilder shippingInfo(Shipping shipping) {
+    public OrderTestDataBuilder shipping(Shipping shipping) {
         this.shipping = shipping;
         return this;
     }
 
-    public OrderTestDataBuilder billingInfo(Billing billing) {
+    public OrderTestDataBuilder billing(Billing billing) {
         this.billing = billing;
         return this;
     }
@@ -147,4 +157,5 @@ public class OrderTestDataBuilder {
         this.status = status;
         return this;
     }
+
 }
